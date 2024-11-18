@@ -19,7 +19,7 @@ tehis_agaci = {
                         "Hayır": "Astım/Bronşit",
                     }
                 },
-                "Hayır": "Ciltte döküntü var mı?",
+                
             }
         },
     },
