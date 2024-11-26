@@ -1,80 +1,103 @@
-import tkinter as tk
-from tkinter import messagebox
-import uuid
+import os
+import json
 
-# Sorular ve teşhis sonuçlarını içeren yapı
-tehis_agaci = {
-    "Boğaz ağrısı var mı?": {
-        "Evet": {
-            "Öksürüğünüz kuru mu?": {
-                "Evet": "Grip",
-                "Hayır": "Sinüzit",
-            }
-        },
-        "Hayır": {
-            "Nefes almakta zorlanıyor musunuz?": {
-                "Evet": {
-                    "Gözlerde sulama var mı?": {
-                        "Evet": "Alerjik Rinit",
-                        "Hayır": "Astım/Bronşit",
-                    }
-                },
-                
-            }
-        },
-    },
-    # Diğer soruları ekleyebilirsiniz
-}
+# klasör oluşturma (yoksa)
+if not os.path.exists("DiagnosesSystem"):
+    os.makedirs("DiagnosesSystem")
 
-# Hasta ID oluşturucu
+#hasta id global variable
+current_id = 1
+#00000000001   tc kimlik gibi 11 hane olsun istediğimiz için formatlayacağız sonrasında
 def generate_patient_id():
-    return str(uuid.uuid4())[:8]  # Kısa bir UUID üretir
+    global current_id
+    patient_id = f"{current_id:011d}"
+    current_id += 1
+    return patient_id
 
-# Uygulama ana sınıfı
-class DiagnosisApp:
-    def __init__(self, root):
-        self.root = root
-        self.root.title("Teşhis Uygulaması")
-
-        self.patient_id = generate_patient_id()
-        self.current_question = None
-        self.tree_pointer = tehis_agaci  # Ağacın başlangıcı
-
-        # Hasta ID etiketi
-        self.id_label = tk.Label(root, text=f"Hasta ID: {self.patient_id}", font=("Arial", 12))
-        self.id_label.pack(pady=10)
-
-        # Soru alanı
-        self.question_label = tk.Label(root, text="", font=("Arial", 14), wraplength=400)
-        self.question_label.pack(pady=20)
-
-        # Evet ve Hayır butonları
-        self.yes_button = tk.Button(root, text="Evet", width=10, command=lambda: self.answer_question("Evet"))
-        self.yes_button.pack(side=tk.LEFT, padx=20, pady=10)
-
-        self.no_button = tk.Button(root, text="Hayır", width=10, command=lambda: self.answer_question("Hayır"))
-        self.no_button.pack(side=tk.RIGHT, padx=20, pady=10)
-
-        # İlk soruyu göster
-        self.show_next_question()
-
-    def show_next_question(self):
-        if isinstance(self.tree_pointer, str):  # Teşhis varsa
-            messagebox.showinfo("Teşhis", f"Teşhisiniz: {self.tree_pointer}")
-            self.root.destroy()
+def create_patient_file(patient_name, patient_id):
+    # creating json files
+    file_path = os.path.join("DiagnosesSystem", f"{patient_name}_{patient_id}.json")
+    if not os.path.exists(file_path):  #w mi a mı dene sonra tekrar yaz bruayı
+        with open(file_path, 'w') as f:
+            json.dump({"id": patient_id, "name": patient_name, "visits": []}, f)
+def traverse_diagnosis_tree(tree):
+    #ree yapısını dolaşmayı sağlar
+    # (emin değilim geliştirilmesi iyi olur)
+    if "question" in tree:  #soru varsa işlemi başlat  
+        #QT bakamadım daha qt öğrendikten sonra terminalden çıkartıp qt üzerinden seçim yaptırılacak
+        answer = input(f"{tree['question']} (yes/no): ").strip().lower()
+        if answer == "yes":
+            return traverse_diagnosis_tree(tree["yes"])
+        elif answer == "no":
+            return traverse_diagnosis_tree(tree["no"])
         else:
-            self.current_question = list(self.tree_pointer.keys())[0]
-            self.question_label.config(text=self.current_question)
+            print("Lütfen sadece 'yes' veya 'no' cevabını verin.")
+            return traverse_diagnosis_tree(tree)
+    else: 
+        return tree
 
-    def answer_question(self, answer):
-        if answer in self.tree_pointer[self.current_question]:
-            self.tree_pointer = self.tree_pointer[self.current_question][answer]
-            self.show_next_question()
-        else:
-            messagebox.showerror("Hata", "Geçersiz yanıt. Lütfen tekrar deneyin.")
+#sistemin json üzerine her ziyareti kaydetmesi gerekiyor bunu hazırlayan kod parçası(?) altta
+#olacak ama daha yazımı tam bitmedi yarım hali git içerisinde record.py içinde bulunuyor
 
-# Uygulama başlatma
+def main():
+    """Programın ana fonksiyonu."""
+    #tree (just one)
+    tehis_agaci = {
+        "question": "Ateş var mı?",
+        "yes": {
+            "question": "Öksürük var mı?",
+            "yes": {
+                "question": "Öksürüğünüz kuru mu?",
+                "yes": {
+                    "question": "Boğaz ağrısı var mı?",
+                    "yes": "Grip",
+                    "no": "Sinüzit"
+                },
+                "no": {
+                    "question": "Nefes almakta zorlanıyor musunuz?",
+                    "yes": "Astım/Bronşit",
+                    "no": {
+                        "question": "Ciltte döküntü var mı?",
+                        "yes": "Alerjik Reaksiyon",
+                        "no": "Mide Problemleri"
+                    }
+                }
+            },
+            "no": {
+                "question": "Burun akıntısı var mı?",
+                "yes": {
+                    "question": "Gözde sulanma var mı?",
+                    "yes": "Alerjik Rinit",
+                    "no": "Sinüzit"
+                },
+                "no": {
+                    "question": "İshal ve karın ağrısı var mı?",
+                    "yes": "Mide Problemleri",
+                    "no": "Diğer"
+                }
+            }
+        },
+        "no": {
+            "question": "Yorgunluk hissediyor musunuz?",
+            "yes": "Alerjik Reaksiyon",
+            "no": "Diğer"
+        }
+    }
+    print("Welcome")
+    patient_name = input("Name, Surname?? ").strip()
+    patient_id = generate_patient_id()
+
+    create_patient_file(patient_name, patient_id)
+    print(f"\nPatient added to the DB {patient_name}, ID: {patient_id}")
+
+    while True:
+        record_visit(patient_name, patient_id, tehis_agaci)
+        another = input("\nDo u want to save another patinet?(yes/no??): ").strip().lower()
+        if another != "yes":
+            break
+
+    print("\nApp Ended")
+
+
 if __name__ == "__main__":
-    root = tk.Tk()
-    app = DiagnosisApp(root)
-    root.mainloop()
+    main()
