@@ -1,0 +1,13 @@
+{
+    "id": "12345678912",
+    "visits": [
+        {
+            "date": "2024-12-01",
+            "diagnosis": "Di\u011fer"
+        },
+        {
+            "date": "2024-12-01",
+            "diagnosis": "Grip"
+        }
+    ]
+}

@@ -1,0 +1,19 @@
+{
+    "2024-12-01": {
+        "patient_count": 3,
+        "records": [
+            {
+                "id": "12345678912",
+                "diagnosis": "Di\u011fer"
+            },
+            {
+                "id": "12356789123",
+                "diagnosis": "Di\u011fer"
+            },
+            {
+                "id": "12345678912",
+                "diagnosis": "Grip"
+            }
+        ]
+    }
+}

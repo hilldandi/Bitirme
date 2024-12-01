@@ -1,30 +1,83 @@
 import os
 import json
+from datetime import datetime
 
-# klasör oluşturma (yoksa)
+# Klasör oluşturma (yoksa)
 if not os.path.exists("DiagnosesSystem"):
     os.makedirs("DiagnosesSystem")
 
-#hasta id global variable
-current_id = 1
-#00000000001   tc kimlik gibi 11 hane olsun istediğimiz için formatlayacağız sonrasında
-def generate_patient_id():
-    global current_id
-    patient_id = f"{current_id:011d}"
-    current_id += 1
-    return patient_id
+# Hasta bilgileri JSON dosyası
+ID_INFO_FILE = os.path.join("DiagnosesSystem", "id_information.json")
 
-def create_patient_file(patient_name, patient_id):
-    # creating json files
-    file_path = os.path.join("DiagnosesSystem", f"{patient_name}_{patient_id}.json")
-    if not os.path.exists(file_path):  #w mi a mı dene sonra tekrar yaz bruayı
+# Hasta bilgileri yükleniyor
+if os.path.exists(ID_INFO_FILE):
+    with open(ID_INFO_FILE, 'r') as f:
+        id_information = json.load(f)
+else:
+    id_information = {}  # {id: {"name": "Ad", "surname": "Soyad"}}
+
+# Günlük kayıtlar
+daily_records = {}  # Günlük hasta takibi {tarih: {"patient_count": sayı, "records": [{"id": ..., "diagnosis": ...}]}}
+
+def load_daily_records():
+    """Günlük kayıtları yükler."""
+    global daily_records
+    file_path = os.path.join("DiagnosesSystem", "date_patientNo.json")
+    if os.path.exists(file_path):
+        with open(file_path, 'r') as f:
+            daily_records = json.load(f)
+
+def save_daily_records():
+    """Günlük kayıtları kaydeder."""
+    file_path = os.path.join("DiagnosesSystem", "date_patientNo.json")
+    with open(file_path, 'w') as f:
+        json.dump(daily_records, f, indent=4)
+
+def save_id_information():
+    """Hasta bilgilerini id_information.json dosyasına kaydeder."""
+    with open(ID_INFO_FILE, 'w') as f:
+        json.dump(id_information, f, indent=4)
+
+def create_patient_file(patient_id):
+    """Hastaya özel JSON dosyasını oluşturur."""
+    file_path = os.path.join("DiagnosesSystem", f"{patient_id}.json")
+    if not os.path.exists(file_path):
         with open(file_path, 'w') as f:
-            json.dump({"id": patient_id, "name": patient_name, "visits": []}, f)
+            json.dump({"id": patient_id, "visits": []}, f)
+
+def record_visit(patient_id, diagnosis):
+    """Hastanın ziyaretini kaydeder."""
+    file_path = os.path.join("DiagnosesSystem", f"{patient_id}.json")
+    if os.path.exists(file_path):
+        with open(file_path, 'r') as f:
+            patient_data = json.load(f)
+
+        # Tarih ve teşhis bilgisi ekle
+        visit_date = datetime.now().strftime("%Y-%m-%d")
+        patient_data["visits"].append({
+            "date": visit_date,
+            "diagnosis": diagnosis
+        })
+
+        # Hasta bilgilerini güncelle
+        with open(file_path, 'w') as f:
+            json.dump(patient_data, f, indent=4)
+
+        # Günlük kayıtları güncelle
+        if visit_date not in daily_records:
+            daily_records[visit_date] = {"patient_count": 0, "records": []}
+        daily_records[visit_date]["patient_count"] += 1
+        daily_records[visit_date]["records"].append({
+            "id": patient_id,
+            "diagnosis": diagnosis
+        })
+        save_daily_records()
+    else:
+        print("Hasta dosyası bulunamadı!")
+
 def traverse_diagnosis_tree(tree):
-    #ree yapısını dolaşmayı sağlar
-    # (emin değilim geliştirilmesi iyi olur)
-    if "question" in tree:  #soru varsa işlemi başlat  
-        #QT bakamadım daha qt öğrendikten sonra terminalden çıkartıp qt üzerinden seçim yaptırılacak
+    """Teşhis ağını dolaşır."""
+    if "question" in tree:
         answer = input(f"{tree['question']} (yes/no): ").strip().lower()
         if answer == "yes":
             return traverse_diagnosis_tree(tree["yes"])
@@ -33,16 +86,23 @@ def traverse_diagnosis_tree(tree):
         else:
             print("Lütfen sadece 'yes' veya 'no' cevabını verin.")
             return traverse_diagnosis_tree(tree)
-    else: 
+    else:
         return tree
 
-#sistemin json üzerine her ziyareti kaydetmesi gerekiyor bunu hazırlayan kod parçası(?) altta
-#olacak ama daha yazımı tam bitmedi yarım hali git içerisinde record.py içinde bulunuyor
+def get_valid_id():
+    """Geçerli bir TC kimlik numarası alır."""
+    while True:
+        patient_id = input("TC Kimlik Numarası (11 haneli): ").strip()
+        if len(patient_id) == 11 and patient_id.isdigit():
+            return patient_id
+        print("Lütfen geçerli bir TC kimlik numarası giriniz (11 haneli olmalı).")
 
 def main():
     """Programın ana fonksiyonu."""
-    #tree (just one)
-    tehis_agaci = {
+    load_daily_records()
+
+    # Teşhis ağacı
+    diagnosis_tree = {
         "question": "Ateş var mı?",
         "yes": {
             "question": "Öksürük var mı?",
@@ -83,21 +143,31 @@ def main():
             "no": "Diğer"
         }
     }
-    print("Welcome")
-    patient_name = input("Name, Surname?? ").strip()
-    patient_id = generate_patient_id()
 
-    create_patient_file(patient_name, patient_id)
-    print(f"\nPatient added to the DB {patient_name}, ID: {patient_id}")
-
+    print("Sistem Başlatılıyor...")
     while True:
-        record_visit(patient_name, patient_id, tehis_agaci)
-        another = input("\nDo u want to save another patinet?(yes/no??): ").strip().lower()
+        patient_id = get_valid_id()
+        if patient_id in id_information:
+            patient_name = id_information[patient_id]["name"]
+            patient_surname = id_information[patient_id]["surname"]
+            print(f"Hoş geldin {patient_surname}, {patient_name}.")
+        else:
+            patient_name = input("Adınız: ").strip()
+            patient_surname = input("Soyadınız: ").strip()
+            id_information[patient_id] = {"name": patient_name, "surname": patient_surname}
+            save_id_information()
+            create_patient_file(patient_id)
+
+        diagnosis = traverse_diagnosis_tree(diagnosis_tree)
+        record_visit(patient_id, diagnosis)
+        print(f"Teşhis kaydedildi: {diagnosis}")
+
+        another = input("Başka bir hasta kaydı eklemek ister misiniz? (yes/no): ").strip().lower()
         if another != "yes":
             break
 
-    print("\nApp Ended")
-
+    print("\nProgram Sonlandırıldı.")
+    save_daily_records()
 
 if __name__ == "__main__":
     main()
