@@ -2,6 +2,8 @@ import os
 import json
 from datetime import datetime
 
+"""bu ilk sistem sadece tek bir tree kullanıyor."""
+
 # Klasör oluşturma (yoksa)
 if not os.path.exists("DiagnosesSystem"):
     os.makedirs("DiagnosesSystem")
@@ -45,7 +47,7 @@ def create_patient_file(patient_id):
         with open(file_path, 'w') as f:
             json.dump({"id": patient_id, "visits": []}, f)
 
-def record_visit(patient_id, diagnosis, symptoms):
+def record_visit(patient_id, diagnosis):
     """Hastanın ziyaretini kaydeder."""
     file_path = os.path.join("DiagnosesSystem", f"{patient_id}.json")
     if os.path.exists(file_path):
@@ -56,8 +58,7 @@ def record_visit(patient_id, diagnosis, symptoms):
         visit_date = datetime.now().strftime("%Y-%m-%d")
         patient_data["visits"].append({
             "date": visit_date,
-            "diagnosis": diagnosis,
-            "symptoms": symptoms
+            "diagnosis": diagnosis
         })
 
         # Hasta bilgilerini güncelle
@@ -77,18 +78,18 @@ def record_visit(patient_id, diagnosis, symptoms):
         print("Hasta dosyası bulunamadı!")
 
 def traverse_diagnosis_tree(tree):
-    """Teşhis ağacını dolaşır ve semptomları toplar."""
-    symptoms = []
-    while "question" in tree:
+    """Teşhis ağını dolaşır."""
+    if "question" in tree:
         answer = input(f"{tree['question']} (yes/no): ").strip().lower()
-        symptoms.append({"question": tree["question"], "answer": answer})
         if answer == "yes":
-            tree = tree["yes"]
+            return traverse_diagnosis_tree(tree["yes"])
         elif answer == "no":
-            tree = tree["no"]
+            return traverse_diagnosis_tree(tree["no"])
         else:
             print("Lütfen sadece 'yes' veya 'no' cevabını verin.")
-    return tree, symptoms
+            return traverse_diagnosis_tree(tree)
+    else:
+        return tree
 
 def get_valid_id():
     """Geçerli bir TC kimlik numarası alır."""
@@ -96,19 +97,19 @@ def get_valid_id():
         patient_id = input("TC Kimlik Numarası (11 haneli): ").strip()
         if len(patient_id) == 11 and patient_id.isdigit():
             return patient_id
-        print("Lütfen geçerli bir TC kimlik numarası giriniz (11 haneli olmaları).")
+        print("Lütfen geçerli bir TC kimlik numarası giriniz (11 haneli olmalı).")
 
 def main():
     """Programın ana fonksiyonu."""
     load_daily_records()
 
-    # Teşhis ağaçları
-    diagnosis_tree_1 = {
+    # Teşhis ağacı
+    diagnosis_tree = {
         "question": "Ateş var mı?",
         "yes": {
             "question": "Öksürük var mı?",
             "yes": {
-                "question": "Öksürünüz kuru mu?",
+                "question": "Öksürüğünüz kuru mu?",
                 "yes": {
                     "question": "Boğaz ağrısı var mı?",
                     "yes": "Grip",
@@ -117,55 +118,60 @@ def main():
                 "no": {
                     "question": "Nefes almakta zorlanıyor musunuz?",
                     "yes": "Astım/Bronşit",
-                    "no": "Mide Problemleri"
+                    "no": {
+                        "question": "Ciltte döküntü var mı?",
+                        "yes": "Alerjik Reaksiyon",
+                        "no": "Mide Problemleri"
+                    }
                 }
             },
+            "no": {
+                "question": "Burun akıntısı var mı?",
+                "yes": {
+                    "question": "Gözde sulanma var mı?",
+                    "yes": "Alerjik Rinit",
+                    "no": "Sinüzit"
+                },
+                "no": {
+                    "question": "İshal ve karın ağrısı var mı?",
+                    "yes": "Mide Problemleri",
+                    "no": "Diğer"
+                }
+            }
+        },
+        "no": {
+            "question": "Yorgunluk hissediyor musunuz?",
+            "yes": "Alerjik Reaksiyon",
             "no": "Diğer"
-        },
-        "no": "Diğer"
-    }
-
-    diagnosis_tree_2 = {
-        "question": "Baş ağrısı var mı?",
-        "yes": {
-            "question": "Baş ağrısı tekrarlayıcı mı?",
-            "yes": "Migren",
-            "no": "Tansiyon tipi baş ağrısı"
-        },
-        "no": "Diğer"
+        }
     }
 
     print("Sistem Başlatılıyor...")
     while True:
-        print("Hangi teşhis ağacını kullanmak istersiniz?")
-        print("1. Ateş ve Öksürük Ağacı")
-        print("2. Baş Ağrısı Ağacı")
-        tree_choice = input("Seçiminiz (1/2): ").strip()
-        if tree_choice == "1":
-            selected_tree = diagnosis_tree_1
-            break
-        elif tree_choice == "2":
-            selected_tree = diagnosis_tree_2
-            break
+        patient_id = get_valid_id()
+        if patient_id in id_information:
+            patient_name = id_information[patient_id]["name"]
+            patient_surname = id_information[patient_id]["surname"]
+            print(f"Hoş geldin {patient_surname}, {patient_name}.")
         else:
-            print("Lütfen geçerli bir seçim yapınız (1 veya 2).")
+            patient_name = input("Adınız: ").strip()
+            patient_surname = input("Soyadınız: ").strip()
+            id_information[patient_id] = {"name": patient_name, "surname": patient_surname}
+            save_id_information()
+            create_patient_file(patient_id)
 
-    patient_id = get_valid_id()
+        diagnosis = traverse_diagnosis_tree(diagnosis_tree)
+        record_visit(patient_id, diagnosis)
+        print(f"Teşhis kaydedildi: {diagnosis}")
 
-    if patient_id in id_information:
-        patient_name = id_information[patient_id]["name"]
-        patient_surname = id_information[patient_id]["surname"]
-        print(f"Hoş geldin {patient_surname}, {patient_name}.")
-    else:
-        patient_name = input("Adınız: ").strip()
-        patient_surname = input("Soyadınız: ").strip()
-        id_information[patient_id] = {"name": patient_name, "surname": patient_surname}
-        save_id_information()
-        create_patient_file(patient_id)
+        another = input("Başka bir hasta kaydı eklemek ister misiniz? (yes/no): ").strip().lower()
+        if another != "yes":
+            break
 
-    diagnosis, symptoms = traverse_diagnosis_tree(selected_tree)
-    record_visit(patient_id, diagnosis, symptoms)
-    print(f"Teşhis kaydedildi: {diagnosis}")
+    print("\nProgram Sonlandırıldı.")
+    save_daily_records()
 
-if __name__ == "__main__":
+if name == "main":
     main()
+
+

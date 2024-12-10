@@ -1,0 +1,27 @@
+{
+    "id": "11111111111",
+    "visits": [
+        {
+            "date": "2024-12-01",
+            "diagnosis": "Di\u011fer"
+        },
+        {
+            "date": "2024-12-10",
+            "diagnosis": "Migren d\u00fc\u015f\u00fcn\u00fclmez"
+        },
+        {
+            "date": "2024-12-10",
+            "diagnosis": "Migren",
+            "symptoms": [
+                {
+                    "question": "Ba\u015f a\u011fr\u0131s\u0131 var m\u0131?",
+                    "answer": "yes"
+                },
+                {
+                    "question": "Ba\u015f a\u011fr\u0131s\u0131 tekrarlay\u0131c\u0131 m\u0131?",
+                    "answer": "yes"
+                }
+            ]
+        }
+    ]
+}

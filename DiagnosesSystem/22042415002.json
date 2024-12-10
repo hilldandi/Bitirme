@@ -1,22 +1,6 @@
 {
-    "id": "12345678912",
+    "id": "22042415002",
     "visits": [
-        {
-            "date": "2024-12-01",
-            "diagnosis": "Di\u011fer"
-        },
-        {
-            "date": "2024-12-01",
-            "diagnosis": "Grip"
-        },
-        {
-            "date": "2024-12-01",
-            "diagnosis": "Di\u011fer"
-        },
-        {
-            "date": "2024-12-10",
-            "diagnosis": "Di\u011fer"
-        },
         {
             "date": "2024-12-10",
             "diagnosis": "Di\u011fer"
@@ -32,6 +16,10 @@
         {
             "date": "2024-12-10",
             "diagnosis": "Di\u011fer"
+        },
+        {
+            "date": "2024-12-10",
+            "diagnosis": "Alerjik Reaksiyon"
         }
     ]
 }

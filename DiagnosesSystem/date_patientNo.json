@@ -1,6 +1,6 @@
 {
     "2024-12-01": {
-        "patient_count": 3,
+        "patient_count": 5,
         "records": [
             {
                 "id": "12345678912",
@@ -13,6 +13,63 @@
             {
                 "id": "12345678912",
                 "diagnosis": "Grip"
+            },
+            {
+                "id": "12345678912",
+                "diagnosis": "Di\u011fer"
+            },
+            {
+                "id": "11111111111",
+                "diagnosis": "Di\u011fer"
+            }
+        ]
+    },
+    "2024-12-10": {
+        "patient_count": 11,
+        "records": [
+            {
+                "id": "12345678912",
+                "diagnosis": "Di\u011fer"
+            },
+            {
+                "id": "12345678912",
+                "diagnosis": "Di\u011fer"
+            },
+            {
+                "id": "22042415002",
+                "diagnosis": "Di\u011fer"
+            },
+            {
+                "id": "22042415002",
+                "diagnosis": "Alerjik Reaksiyon"
+            },
+            {
+                "id": "22042415002",
+                "diagnosis": "Migren d\u00fc\u015f\u00fcn\u00fclmez"
+            },
+            {
+                "id": "12356789123",
+                "diagnosis": "Di\u011fer"
+            },
+            {
+                "id": "22042415002",
+                "diagnosis": "Di\u011fer"
+            },
+            {
+                "id": "27244241485",
+                "diagnosis": "Di\u011fer"
+            },
+            {
+                "id": "22042415002",
+                "diagnosis": "Alerjik Reaksiyon"
+            },
+            {
+                "id": "11111111111",
+                "diagnosis": "Migren d\u00fc\u015f\u00fcn\u00fclmez"
+            },
+            {
+                "id": "11111111111",
+                "diagnosis": "Migren"
             }
         ]
     }
