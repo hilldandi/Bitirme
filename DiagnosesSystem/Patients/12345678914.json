@@ -1,0 +1,15 @@
+{
+    "id": "12345678914",
+    "visits": [
+        {
+            "date": "2024-12-22",
+            "diagnosis": "Di\u011fer",
+            "symptoms": [
+                {
+                    "question": "Ba\u015f a\u011fr\u0131s\u0131 var m\u0131?",
+                    "answer": "no"
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,83 @@
+{
+    "id": "12345678901",
+    "visits": [
+        {
+            "date": "2024-12-22",
+            "diagnosis": "Di\u011fer",
+            "symptoms": [
+                {
+                    "question": "Ba\u015f a\u011fr\u0131s\u0131 var m\u0131?",
+                    "answer": "yes"
+                },
+                {
+                    "question": "Ate\u015f var m\u0131?",
+                    "answer": "yes"
+                },
+                {
+                    "question": "\u00d6ks\u00fcr\u00fck var m\u0131?",
+                    "answer": "yes"
+                },
+                {
+                    "question": "Bo\u011faz a\u011fr\u0131s\u0131 var m\u0131?",
+                    "answer": "yes"
+                }
+            ]
+        },
+        {
+            "date": "2024-12-22",
+            "diagnosis": "Covid",
+            "symptoms": [
+                {
+                    "question": "question",
+                    "answer": "answer"
+                },
+                {
+                    "question": "question",
+                    "answer": "answer"
+                }
+            ]
+        },
+        {
+            "date": "2024-12-22",
+            "diagnosis": "So\u011fuk Alg\u0131nl\u0131\u011f\u0131",
+            "symptoms": [
+                {
+                    "question": "question",
+                    "answer": "answer"
+                },
+                {
+                    "question": "question",
+                    "answer": "answer"
+                }
+            ]
+        },
+        {
+            "date": "2024-12-22",
+            "diagnosis": "So\u011fuk Alg\u0131nl\u0131\u011f\u0131",
+            "symptoms": [
+                {
+                    "question": "question",
+                    "answer": "answer"
+                },
+                {
+                    "question": "question",
+                    "answer": "answer"
+                }
+            ]
+        },
+        {
+            "date": "2024-12-22",
+            "diagnosis": "So\u011fuk Alg\u0131nl\u0131\u011f\u0131",
+            "symptoms": [
+                {
+                    "question": "\u00d6ks\u00fcr\u00fck var m\u0131?",
+                    "answer": "no"
+                },
+                {
+                    "question": "Ate\u015f var m\u0131?",
+                    "answer": "yes"
+                }
+            ]
+        }
+    ]
+}
