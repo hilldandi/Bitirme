@@ -1,0 +1,120 @@
+{
+    "Migren Ağacı": {
+        "Baş ağrısı var mı?": {
+            "yes": {
+                "Baş ağrısı tekrarlayıcı mı?": {
+                    "yes": {
+                        "Baş ağrısı genellikle tek taraflı mı?": {
+                            "yes": {
+                                "Bulantı veya kusma var mı?": {
+                                    "yes": "Migren",
+                                    "no": {
+                                        "Aura belirtileri (görsel rahatsızlıklar, karıncalanma vb.) var mı?": {
+                                            "yes": "Migren",
+                                            "no": "Tansiyon tipi baş ağrısı"
+                                        }
+                                    }
+                                }
+                            },
+                            "no": {
+                                "Ağrı ışık veya ses hassasiyeti yaratıyor mu?": {
+                                    "yes": "Migren",
+                                    "no": "Tansiyon tipi baş ağrısı"
+                                }
+                            }
+                        }
+                    },
+                    "no": {
+                        "Ağrı fiziksel aktiviteyle kötüleşiyor mu?": {
+                            "yes": "Migren",
+                            "no": "Diğer"
+                        }
+                    }
+                }
+            },
+            "no": {
+                "Başka belirtiler mevcut mu?": {
+                    "yes": "Diğer",
+                    "no": "Migren düşünülmez"
+                }
+            }
+        }
+    },
+    "COVID-19 Ağacı": {
+        "Ateşiniz var mı?": {
+            "yes": {
+                "Öksürüğünüz var mı?": {
+                    "yes": {
+                        "Nefes almakta zorluk çekiyor musunuz?": {
+                            "yes": "COVID-19 Olabilir",
+                            "no": {
+                                "Koku veya tat kaybı yaşadınız mı?": {
+                                    "yes": "COVID-19 Olabilir",
+                                    "no": "Soğuk Algınlığı veya Grip"
+                                }
+                            }
+                        }
+                    },
+                    "no": {
+                        "Son 14 gün içinde bir COVID-19 hastasıyla temasınız oldu mu?": {
+                            "yes": "COVID-19 Şüphesi (Test Önerilir)",
+                            "no": "Diğer Nedenler Araştırılmalı"
+                        }
+                    }
+                }
+            },
+            "no": {
+                "Aşı türünüzü biliyor musunuz?": {
+                    "yes": {
+                        "Hangi aşı türünü oldunuz? (mRNA/Vektör)": {
+                            "mRNA": {
+                                "Kaç doz oldunuz?": {
+                                    "1-2": "COVID-19 Şüphesi Az",
+                                    "3+": "COVID-19 Olasılığı Çok Düşük"
+                                }
+                            },
+                            "Vektör": {
+                                "Kaç doz oldunuz?": {
+                                    "1-2": "COVID-19 Şüphesi Az",
+                                    "3+": "COVID-19 Olasılığı Çok Düşük"
+                                }
+                            }
+                        }
+                    },
+                    "no": {
+                        "Son 14 gün içinde bir COVID-19 hastasıyla temasınız oldu mu?": {
+                            "yes": "COVID-19 Şüphesi (Test Önerilir)",
+                            "no": "COVID-19 Olasılığı Çok Düşük"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "Genel Ağaç": {
+        "Ateş var mı?": {
+            "yes": {
+                "Öksürük var mı?": {
+                    "yes": {
+                        "Öksürünüz kuru mu?": {
+                            "yes": {
+                                "Boğaz ağrısı var mı?": {
+                                    "yes": "Grip",
+                                    "no": "Sinüzit"
+                                }
+                            },
+                            "no": {
+                                "Nefes almakta zorlanıyor musunuz?": {
+                                    "yes": "Astım/Bronşit",
+                                    "no": "Mide Problemleri"
+                                }
+                            }
+                        }
+                    },
+                    "no": "Diğer"
+                }
+            },
+            "no": "Diğer"
+        }
+    }
+}
