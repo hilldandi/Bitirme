@@ -7,7 +7,7 @@ from PyQt5.QtWidgets import (
 from PyQt5.QtCore import Qt
 import sqlite3
 
-# SQLite database setup
+# db setup
 def setup_database():
     conn = sqlite3.connect('hospital.db')
     cursor = conn.cursor()
@@ -21,7 +21,7 @@ def setup_database():
             age INTEGER,
             hospital TEXT
         )
-    ''')   
+    ''')
 
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS diagnoses (
@@ -31,18 +31,39 @@ def setup_database():
             patient_name TEXT,
             tc_no TEXT,
             questions_and_answers TEXT,
-            final_diagnosis TEXT
+            final_diagnosis TEXT,
+            protocol_number TEXT
         )
     ''')
     conn.commit()
     conn.close()
+# Protokol numarası oluşturma fonksiyonu
+def generate_protocol_number(hospital_name):
+    import datetime  # Tarih işlemleri için
+    today = datetime.datetime.now()
+    year = today.year
+    month = today.month
+    day = today.day
+    date_prefix = f"{year}{month:02}{day:02}"
+
+    conn = sqlite3.connect('hospital.db')
+    cursor = conn.cursor()
+    cursor.execute(
+        "SELECT COUNT(*) FROM diagnoses WHERE hospital_name = ? AND date LIKE ?",
+        (hospital_name, f"{year}-{month:02}%")
+    )
+    count = cursor.fetchone()[0] + 1  # Ay içerisindeki toplam hasta sayısı + 1
+    conn.close()
+
+    protocol_number = f"{date_prefix}{count:02}"  # 2024122303 formatında
+    return protocol_number
 
 def load_diagnostic_trees():
     with open('diagnostic_trees.json', 'r', encoding='utf-8') as file:
         diagnostic_trees = json.load(file)
     return diagnostic_trees
 
-# Main application class
+# main app
 class DiagnosisApp(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -162,16 +183,23 @@ class LoginScene(QWidget):
         conn = sqlite3.connect('hospital.db')
         cursor = conn.cursor()
         try:
-            cursor.execute("INSERT INTO patients (tc_no, name, surname, gender, age, hospital) VALUES (?, ?, ?, ?, ?, ?)",
-                           (tc_no, name, surname, gender, int(age), hospital))
+            # Hasta kaydını patients tablosuna ekle
+            cursor.execute(
+                "INSERT INTO patients (tc_no, name, surname, gender, age, hospital) VALUES (?, ?, ?, ?, ?, ?)",
+                (tc_no, name, surname, gender, int(age), hospital)
+            )
             conn.commit()
+
             QMessageBox.information(self, "Başarılı", "Hasta kaydedildi.")
             self.form_group.setVisible(False)
             self.save_button.setVisible(False)
+
         except sqlite3.IntegrityError:
             QMessageBox.warning(self, "Hata", "Bu TC Kimlik No zaten kayıtlı.")
         finally:
             conn.close()
+
+        # Formu sıfırla
         self.name_input.setText('')
         self.surname_input.setText('')
         self.age_input.setText('')
@@ -191,7 +219,7 @@ class DiagnosisScene(QWidget):
     def init_ui(self):
         layout = QVBoxLayout()
 
-        # Navigation buttons
+        # nav butons (forward, backward etc)
         nav_layout = QHBoxLayout()
         back_button = QPushButton("Geri")
         back_button.setStyleSheet("font-size: 18px; padding: 10px;")
@@ -200,7 +228,7 @@ class DiagnosisScene(QWidget):
 
         layout.addLayout(nav_layout)
 
-        # Diagnosis history table
+        # hastalık hist table
         self.history_table = QTableWidget()
         self.history_table.setColumnCount(2)
         self.history_table.setHorizontalHeaderLabels(["Tarih", "Teşhis"])
@@ -241,30 +269,33 @@ class DiagnosisScene(QWidget):
 
     def load_patient_diagnoses(self):
         """Load the diagnosis history for the patient."""
-        tc_no = self.main_window.login_scene.tc_input.text()  # TC Kimlik No'yu al
-        print(tc_no)
+        tc_no = self.main_window.login_scene.tc_input.text()  # tc no alış
         conn = sqlite3.connect('hospital.db')
         cursor = conn.cursor()
-        cursor.execute("SELECT date, final_diagnosis, questions_and_answers FROM diagnoses WHERE tc_no = ?", (tc_no,))
+        cursor.execute(
+            "SELECT date, protocol_number, final_diagnosis FROM diagnoses WHERE tc_no = ?",
+            (tc_no,)
+        )
         diagnoses = cursor.fetchall()
         conn.close()
 
         self.history_table.setRowCount(len(diagnoses))
-        for row_idx, (date, questions_and_answers,diagnosis) in enumerate(diagnoses):
+        for row_idx, (date, protocol_number, diagnosis) in enumerate(diagnoses):
             self.history_table.setItem(row_idx, 0, QTableWidgetItem(date))
-            self.history_table.setItem(row_idx, 1,QTableWidgetItem(questions_and_answers))
+            self.history_table.setItem(row_idx, 1, QTableWidgetItem(protocol_number))
             self.history_table.setItem(row_idx, 2, QTableWidgetItem(diagnosis))
+
 
     def load_tree(self):
         tree_name = self.tree_combo.currentText()
         self.current_tree = self.diagnostic_trees.get(tree_name)
-        self.current_node = self.current_tree  # Start from the root of the tree
-        self.questions_and_answers = []  # Reset questions and answers
+        self.current_node = self.current_tree  # root starting (1st)
+        self.questions_and_answers = []  # reset questipons and answers
         self.next_question()
 
     def next_question(self):
         """Display the next question or diagnosis result."""
-        if isinstance(self.current_node, dict):  # If the node has more questions
+        if isinstance(self.current_node, dict):  # not sure ??
             question = list(self.current_node.keys())[0]
             self.question_label.setText(question)
             self.yes_button.setVisible(True)
@@ -280,27 +311,57 @@ class DiagnosisScene(QWidget):
         """Process the user's answer and navigate the tree."""
         if isinstance(self.current_node, dict):
             question = list(self.current_node.keys())[0]
-            self.questions_and_answers.append((question, answer))  # Store question and answer
+            self.questions_and_answers.append((question, answer))  # storing the data
             self.current_node = self.current_node[question].get(answer)
             self.next_question()
 
     def save_diagnosis(self, final_diagnosis):
         """Save the diagnosis result to the database."""
         hospital_name = self.main_window.login_scene.hospital_combo.currentText()
-        patient_name = self.main_window.login_scene.name_input.text()
-        tc_no = self.main_window.login_scene.tc_input.text()  # TC Kimlik No'yu al
+        tc_no = self.main_window.login_scene.tc_input.text()  # TC kimlik no
         questions_and_answers_str = json.dumps(self.questions_and_answers, ensure_ascii=False)
 
+        # hastanın ad ve soyadını veritabanından al
+        conn = sqlite3.connect('hospital.db')
+        cursor = conn.cursor()
+        cursor.execute("SELECT name, surname FROM patients WHERE tc_no = ?", (tc_no,))
+        patient = cursor.fetchone()
+        conn.close()
+
+        if patient:
+            patient_name = f"{patient[0]} {patient[1]}"
+        else:
+            QMessageBox.warning(self, "Hata", "Hasta bulunamadı.")
+            return
+
+        # creation of protocol no
+        protocol_number = generate_protocol_number(hospital_name)
+
+        # diagnoses tablosunda aynı TC numarası varsa güncelle, yoksa yeni kayıt oluştur
         conn = sqlite3.connect('hospital.db')
         cursor = conn.cursor()
         cursor.execute(
-            "INSERT INTO diagnoses (date, hospital_name, patient_name, tc_no, questions_and_answers, final_diagnosis) VALUES (datetime('now'), ?, ?, ?, ?, ?)",
-            (hospital_name, patient_name, tc_no, questions_and_answers_str, final_diagnosis)
+            "SELECT * FROM diagnoses WHERE tc_no = ? AND hospital_name = ?",
+            (tc_no, hospital_name)
         )
+        existing_record = cursor.fetchone()
+
+        if existing_record:
+            # var olan teşhisi güncelle
+            cursor.execute(
+                "UPDATE diagnoses SET date = datetime('now'), patient_name = ?, questions_and_answers = ?, final_diagnosis = ?, protocol_number = ? WHERE tc_no = ? AND hospital_name = ?",
+                (patient_name, questions_and_answers_str, final_diagnosis, protocol_number, tc_no, hospital_name)
+            )
+        else:
+            # yeni teşhis kaydı ekle
+            cursor.execute(
+                "INSERT INTO diagnoses (date, hospital_name, patient_name, tc_no, questions_and_answers, final_diagnosis, protocol_number) VALUES (datetime('now'), ?, ?, ?, ?, ?, ?)",
+                (hospital_name, patient_name, tc_no, questions_and_answers_str, final_diagnosis, protocol_number)
+            )
         conn.commit()
         conn.close()
 
-        QMessageBox.information(self, f"Teşhis: {final_diagnosis}", "Teşhis başarıyla kaydedildi. Giriş ekranına dönülüyor.")
+        QMessageBox.information(self, f"Teşhis: {final_diagnosis}", f"Teşhis başarıyla kaydedildi. Protokol Numarası: {protocol_number}.")
         self.main_window.login_scene.tc_input.setText('')
         self.main_window.switch_to_login_scene()
 
@@ -314,7 +375,7 @@ class ResultsScene(QWidget):
     def init_ui(self):
         layout = QVBoxLayout()
 
-        # Navigation buttons
+        # nav bıttons
         nav_layout = QHBoxLayout()
         back_button = QPushButton("Geri")
         back_button.setStyleSheet("font-size: 18px; padding: 10px;")
