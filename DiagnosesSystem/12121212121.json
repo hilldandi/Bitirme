@@ -1,0 +1,29 @@
+{
+    "id": "12121212121",
+    "visits": [
+        {
+            "date": "2024-12-24",
+            "diagnosis": "Di\u011fer",
+            "symptoms": [
+                {
+                    "question": "Ba\u015f a\u011fr\u0131s\u0131 var m\u0131?",
+                    "answer": "no"
+                }
+            ]
+        },
+        {
+            "date": "2024-12-24",
+            "diagnosis": "Di\u011fer",
+            "symptoms": [
+                {
+                    "question": "Ate\u015f var m\u0131?",
+                    "answer": "n"
+                },
+                {
+                    "question": "Ate\u015f var m\u0131?",
+                    "answer": "no"
+                }
+            ]
+        }
+    ]
+}

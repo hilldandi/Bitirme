@@ -104,6 +104,82 @@ def main():
 
     # Teşhis ağaçları
     diagnosis_tree_1 = {
+        "question": "Baş ağrısı var mı?",
+        "yes": {
+            "question": "Baş ağrısı tekrarlayıcı mı?",
+            "yes": {
+                "question": "Baş ağrısı genellikle tek taraflı mı?",
+                "yes": {
+                    "question": "Bulantı veya kusma var mı?",
+                    "yes": "Migren",
+                    "no": {
+                        "question": "Aura belirtileri (görsel rahatsızlıklar, karıncalanma vb.) var mı?",
+                        "yes": "Migren",
+                        "no": "Tansiyon tipi baş ağrısı"
+                    }
+                },
+                "no": {
+                    "question": "Ağrı ışık veya ses hassasiyeti yaratıyor mu?",
+                    "yes": "Migren",
+                    "no": "Tansiyon tipi baş ağrısı"
+                }
+            },
+            "no": {
+                "question": "Ağrı fiziksel aktiviteyle kötüleşiyor mu?",
+                "yes": "Migren",
+                "no": "Diğer"
+            }
+        },
+        "no": {
+            "question": "Başka belirtiler mevcut mu?",
+            "yes": "Diğer",
+            "no": "Migren düşünülmez"
+        }
+    }
+
+
+    diagnosis_tree_2 = {
+        "question": "Ateşiniz var mı?",
+        "yes": {
+            "question": "Öksürüğünüz var mı?",
+            "yes": {
+                "question": "Nefes almakta zorluk çekiyor musunuz?",
+                "yes": "COVID-19 Olabilir",
+                "no": {
+                    "question": "Koku veya tat kaybı yaşadınız mı?",
+                    "yes": "COVID-19 Olabilir",
+                    "no": "Soğuk Algınlığı veya Grip"
+                }
+            },
+            "no": {
+                "question": "Son 14 gün içinde bir COVID-19 hastasıyla temasınız oldu mu?",
+                "yes": "COVID-19 Şüphesi (Test Önerilir)",
+                "no": "Diğer Nedenler Araştırılmalı"
+            }
+        },
+        "no": {
+            "question": "Aşı türünüzü biliyor musunuz?",
+            "yes": {
+                "question": "Hangi aşı türünü oldunuz? (mRNA/Vektör)",
+                "mRNA": {
+                    "question": "Kaç doz oldunuz?",
+                    "1-2": "COVID-19 Şüphesi Az",
+                    "3+": "COVID-19 Olasılığı Çok Düşük"
+                },
+                "Vektör": {
+                    "question": "Kaç doz oldunuz?",
+                    "1-2": "COVID-19 Şüphesi Az",
+                    "3+": "COVID-19 Olasılığı Çok Düşük"
+                }
+            },
+            "no": {
+                "question": "Son 14 gün içinde bir COVID-19 hastasıyla temasınız oldu mu?",
+                "yes": "COVID-19 Şüphesi (Test Önerilir)",
+                "no": "COVID-19 Olasılığı Çok Düşük"
+            }
+        }
+}
+    diagnosis_tree_3 = {
         "question": "Ateş var mı?",
         "yes": {
             "question": "Öksürük var mı?",
@@ -123,29 +199,25 @@ def main():
             "no": "Diğer"
         },
         "no": "Diğer"
-    }
+}
 
-    diagnosis_tree_2 = {
-        "question": "Baş ağrısı var mı?",
-        "yes": {
-            "question": "Baş ağrısı tekrarlayıcı mı?",
-            "yes": "Migren",
-            "no": "Tansiyon tipi baş ağrısı"
-        },
-        "no": "Diğer"
-    }
+
 
     print("Sistem Başlatılıyor...")
     while True:
         print("Hangi teşhis ağacını kullanmak istersiniz?")
-        print("1. Ateş ve Öksürük Ağacı")
-        print("2. Baş Ağrısı Ağacı")
-        tree_choice = input("Seçiminiz (1/2): ").strip()
+        print("1. Migren Ağacı")
+        print("2. Covid Ağacı")
+        print("3. Genel Ağaç")
+        tree_choice = input("Seçiminiz (1/2/3): ").strip()
         if tree_choice == "1":
             selected_tree = diagnosis_tree_1
             break
         elif tree_choice == "2":
             selected_tree = diagnosis_tree_2
+            break
+        elif tree_choice == "3":
+            selected_tree = diagnosis_tree_3
             break
         else:
             print("Lütfen geçerli bir seçim yapınız (1 veya 2).")
