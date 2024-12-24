@@ -10,16 +10,128 @@ class SymptomsScreen(QWidget):
 
         # Ağaçlar ve semptomlar
         self.diagnosis_trees = {
-            "Soğuk Algınlığı Ağacı": {
-                "Baş ağrısı var mı?": {"yes": "Soğuk Algınlığı", "no": "Grip"},
-                "Ateş var mı?": {"yes": "Grip", "no": "Soğuk Algınlığı"},
+            "Baş Ağrısı Ağacı 2": {
+                "Baş ağrısı var mı?": {
+                    "yes": {
+                        "Baş ağrısı tekrarlayıcı mı?": {
+                            "yes": {
+                                "Baş ağrısı genellikle tek taraflı mı?": {
+                                    "yes": {
+                                        "Bulantı veya kusma var mı?": {
+                                            "yes": "Migren",
+                                            "no": {
+                                                "Aura belirtileri (görsel rahatsızlıklar, karıncalanma vb.) var mı?": {
+                                                    "yes": "Migren",
+                                                    "no": "Tansiyon tipi baş ağrısı"
+                                                }
+                                            }
+                                        }
+                                    },
+                                    "no": {
+                                        "Ağrı ışık veya ses hassasiyeti yaratıyor mu?": {
+                                            "yes": "Migren",
+                                            "no": "Tansiyon tipi baş ağrısı"
+                                        }
+                                    }
+                                }
+                            },
+                            "no": {
+                                "Ağrı fiziksel aktiviteyle kötüleşiyor mu?": {
+                                    "yes": "Migren",
+                                    "no": "Diğer"
+                                }
+                            }
+                        }
+                    },
+                    "no": {
+                        "Başka belirtiler mevcut mu?": {
+                            "yes": "Diğer",
+                            "no": "Migren düşünülmez"
+                        }
+                    }
+                }
             },
-            "Covid Ağacı": {
-                "Öksürük var mı?": {"yes": "Covid", "no": "Soğuk Algınlığı"},
-                "Ateş var mı?": {"yes": "Covid", "no": "Sağlıklı"},
+            "COVID-19 Ağacı": {
+                "Ateşiniz var mı?": {
+                    "yes": {
+                        "Öksürüğünüz var mı?": {
+                            "yes": {
+                                "Nefes almakta zorluk çekiyor musunuz?": {
+                                    "yes": "COVID-19 Olabilir",
+                                    "no": {
+                                        "Koku veya tat kaybı yaşadınız mı?": {
+                                            "yes": "COVID-19 Olabilir",
+                                            "no": "Soğuk Algınlığı veya Grip"
+                                        }
+                                    }
+                                }
+                            },
+                            "no": {
+                                "Son 14 gün içinde bir COVID-19 hastasıyla temasınız oldu mu?": {
+                                    "yes": "COVID-19 Şüphesi (Test Önerilir)",
+                                    "no": "Diğer Nedenler Araştırılmalı"
+                                }
+                            }
+                        }
+                    },
+                    "no": {
+                        "Aşı türünüzü biliyor musunuz?": {
+                            "yes": {
+                                "Hangi aşı türünü oldunuz? (mRNA/Vektör)": {
+                                    "mRNA": {
+                                        "Kaç doz oldunuz?": {
+                                            "1-2": "COVID-19 Şüphesi Az",
+                                            "3+": "COVID-19 Olasılığı Çok Düşük"
+                                        }
+                                    },
+                                    "Vektör": {
+                                        "Kaç doz oldunuz?": {
+                                            "1-2": "COVID-19 Şüphesi Az",
+                                            "3+": "COVID-19 Olasılığı Çok Düşük"
+                                        }
+                                    }
+                                }
+                            },
+                            "no": {
+                                "Son 14 gün içinde bir COVID-19 hastasıyla temasınız oldu mu?": {
+                                    "yes": "COVID-19 Şüphesi (Test Önerilir)",
+                                    "no": "COVID-19 Olasılığı Çok Düşük"
+                                }
+                            }
+                        }
+                    }
+                }
             },
+            "Ateş ve Öksürük Ağacı": {
+                "Ateş var mı?": {
+                    "yes": {
+                        "Öksürük var mı?": {
+                            "yes": {
+                                "Öksürünüz kuru mu?": {
+                                    "yes": {
+                                        "Boğaz ağrısı var mı?": {
+                                            "yes": "Grip",
+                                            "no": "Sinüzit"
+                                        }
+                                    },
+                                    "no": {
+                                        "Nefes almakta zorlanıyor musunuz?": {
+                                            "yes": "Astım/Bronşit",
+                                            "no": "Mide Problemleri"
+                                        }
+                                    }
+                                }
+                            },
+                            "no": "Diğer"
+                        }
+                    },
+                    "no": "Diğer"
+                }
+            }
         }
+
         self.current_tree = None
+        self.current_branch = None
         self.symptoms = []
         self.selected_answers = []
         self.current_index = 0
@@ -35,19 +147,19 @@ class SymptomsScreen(QWidget):
         self.select_tree_button.clicked.connect(self.select_tree)
 
         self.question_label = QLabel()
-        self.yes_button = QRadioButton("Evet")
-        self.no_button = QRadioButton("Hayır")
+        self.yes_button = QRadioButton("yes")
+        self.no_button = QRadioButton("no")
         self.button_group = QButtonGroup()
         self.button_group.addButton(self.yes_button)
         self.button_group.addButton(self.no_button)
 
-        self.next_button = QPushButton("İleri")
+        self.next_button = QPushButton("next")
         self.next_button.clicked.connect(self.next_question)
 
-        self.back_button = QPushButton("Geri")
+        self.back_button = QPushButton("back")
         self.back_button.clicked.connect(self.previous_question)
 
-        self.save_exit_button = QPushButton("Kaydet ve Çık")
+        self.save_exit_button = QPushButton("save and exit")
         self.save_exit_button.clicked.connect(self.save_and_exit)
 
         # Layout elemanlarını ekle
@@ -66,85 +178,73 @@ class SymptomsScreen(QWidget):
 
     def update_ui(self):
         """Arayüzün durumunu günceller."""
-        if self.current_tree is None:
-            # Ağaç seçimi aşaması
-            self.question_label.hide()
+        if self.current_branch is None or isinstance(self.current_branch, str):
+            # Teşhis ekranı
+            self.question_label.setText(f"TEŞHİSİNİZ: {self.current_branch}")
             self.yes_button.hide()
             self.no_button.hide()
             self.next_button.hide()
             self.back_button.hide()
-            self.save_exit_button.hide()
+            self.save_exit_button.show()
         else:
-            # Semptom sorgulama aşaması
-            self.tree_selector_label.hide()
-            self.tree_selector.hide()
-            self.select_tree_button.hide()
-            self.question_label.show()
+            # Yeni soruyu göster
+            self.question_label.setText(list(self.current_branch.keys())[0])
             self.yes_button.show()
             self.no_button.show()
             self.next_button.show()
-            self.back_button.show()
-            self.save_exit_button.show()
-            if self.current_index < len(self.symptoms):
-                self.question_label.setText(self.symptoms[self.current_index])
-            else:
-                self.question_label.setText("Teşhis Tamamlandı.")
+            self.back_button.setVisible(len(self.selected_answers) > 0)
+            self.save_exit_button.hide()
 
     def select_tree(self):
         """Seçilen teşhis ağacını başlatır."""
         tree_name = self.tree_selector.currentText()
         self.current_tree = self.diagnosis_trees[tree_name]
-        self.symptoms = list(self.current_tree.keys())
-        self.selected_answers = []
+        self.current_branch = self.current_tree
         self.current_index = 0
+        self.selected_answers = []
         self.update_ui()
 
     def next_question(self):
         """Bir sonraki soruya geçiş."""
-        if self.yes_button.isChecked():
-            self.selected_answers.append(("yes"))
-        elif self.no_button.isChecked():
-            self.selected_answers.append(("no"))
-        else:
+        if not (self.yes_button.isChecked() or self.no_button.isChecked()):
             QMessageBox.warning(self, "Hata", "Lütfen bir seçim yapın!")
             return
 
-        self.current_index += 1
-        if self.current_index >= len(self.symptoms):
-            diagnosis = self.determine_diagnosis()
-            QMessageBox.information(self, "Teşhis", f"TEŞHİSİNİZ: {diagnosis}")
-            self.save_diagnosis(diagnosis)
-        else:
-            self.update_ui()
+        # Kullanıcının cevabını kaydet
+        answer = "yes" if self.yes_button.isChecked() else "no"
+        self.selected_answers.append((list(self.current_branch.keys())[0], answer))
+
+        # Ağaçta bir sonraki dala geç
+        self.current_branch = self.current_branch[list(self.current_branch.keys())[0]].get(answer, "Belirlenemedi")
+        self.update_ui()
 
     def previous_question(self):
         """Bir önceki soruya dönüş."""
-        if self.current_index > 0:
-            self.current_index -= 1
-            self.selected_answers.pop()
+        if self.selected_answers:
+            # Bir önceki cevabı kaldır
+            last_question, last_answer = self.selected_answers.pop()
+
+            # Ağaçta geri gitmek için dalları yeniden yükle
+            self.current_branch = self.current_tree
+            for question, answer in self.selected_answers:
+                self.current_branch = self.current_branch[question][answer]
             self.update_ui()
 
-    def determine_diagnosis(self):
-        """Seçilen semptomlara göre teşhis belirler."""
-        tree = self.current_tree
-        for index, answer in enumerate(self.selected_answers):
-            question = self.symptoms[index]
-            if question in tree and answer in tree[question]:
-                tree = tree[question][answer]
-            else:
-                break
-        return tree if isinstance(tree, str) else "Belirlenemedi"
+    def save_and_exit(self):
+        """Teşhisi kaydedip çıkışı sağlar."""
+        if isinstance(self.current_branch, str):
+            diagnosis = self.current_branch
+        else:
+            diagnosis = "Belirlenemedi"
+        self.save_diagnosis(diagnosis)
+        QMessageBox.information(self, "Çıkış", "Teşhisiniz kaydedildi. Uygulamadan çıkılıyor.")
+        exit(0)
 
     def save_diagnosis(self, diagnosis):
         """Teşhisi JSON dosyasına kaydeder."""
         self.patient_id = "12345678901"  # Gerçek uygulamada bu değer dinamik olmalı
         formatted_answers = [
-            {"question": self.symptoms[i], "answer": answer}
-            for i, answer in enumerate(self.selected_answers)
+            {"question": question, "answer": answer}
+            for question, answer in self.selected_answers
         ]
         record_visit(self.patient_id, diagnosis, formatted_answers)
-
-    def save_and_exit(self):
-        """Teşhisi kaydedip çıkışı sağlar."""
-        QMessageBox.information(self, "Çıkış", "Teşhisiniz kaydedildi. Uygulamadan çıkılıyor.")
-        exit(0)

@@ -1,10 +1,10 @@
 {
-    "2024-12-22": {
+    "2024-12-24": {
         "patient_count": 1,
         "records": [
             {
                 "id": "12345678901",
-                "diagnosis": "So\u011fuk Alg\u0131nl\u0131\u011f\u0131"
+                "diagnosis": "COVID-19 \u015e\u00fcphesi (Test \u00d6nerilir)"
             }
         ]
     }
