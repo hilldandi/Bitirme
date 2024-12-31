@@ -92,29 +92,152 @@
         }
     },
     "Genel Ağaç": {
-        "Ateş var mı?": {
-            "yes": {
-                "Öksürük var mı?": {
-                    "yes": {
-                        "Öksürünüz kuru mu?": {
-                            "yes": {
-                                "Boğaz ağrısı var mı?": {
-                                    "yes": "Grip",
-                                    "no": "Sinüzit"
-                                }
-                            },
-                            "no": {
-                                "Nefes almakta zorlanıyor musunuz?": {
-                                    "yes": "Astım/Bronşit",
-                                    "no": "Mide Problemleri"
-                                }
-                            }
-                        }
-                    },
-                    "no": "Diğer"
+    "Ateşiniz var mı?": {
+      "yes": {
+        "Öksürüğünüz var mı?": {
+          "yes": {
+            "Kuru öksürük mü?": {
+              "yes": {
+                "Nefes almakta zorluk çekiyor musunuz?": {
+                  "yes": "COVID-19 veya Bronşit Olabilir.",
+                  "no": {
+                    "Halsizlik hissediyor musunuz?": {
+                      "yes": "Grip Olabilir.",
+                      "no": "Soğuk algınlığı olasılığı yüksek."
+                    }
+                  }
                 }
-            },
-            "no": "Diğer"
+              },
+              "no": {
+                "Balgam çıkarıyor musunuz?": {
+                  "yes": {
+                    "Balgam renginiz sarı veya yeşil mi?": {
+                      "yes": "Akciğer enfeksiyonu veya Bronşit olabilir.",
+                      "no": "Hafif Üst Solunum Yolu Enfeksiyonu."
+                    }
+                  },
+                  "no": "Belirtiler uyumlu değil, detaylı değerlendirme önerilir."
+                }
+              }
+            }
+          },
+          "no": {
+            "Baş ağrınız var mı?": {
+              "yes": {
+                "Göz çevresinde baskı hissediyor musunuz?": {
+                  "yes": "Sinüzit olabilir.",
+                  "no": {
+                    "Işığa duyarlılığınız var mı?": {
+                      "yes": "Migren veya başka bir nörolojik durum olabilir.",
+                      "no": "Grip veya yorgunluk olabilir."
+                    }
+                  }
+                }
+              },
+              "no": {
+                "Boğaz ağrınız var mı?": {
+                  "yes": {
+                    "Yutkunma sırasında ağrı hissediyor musunuz?": {
+                      "yes": {
+                        "Bademciklerde şişlik var mı?": {
+                          "yes": "Bademcik iltihabı olabilir.",
+                          "no": "Hafif boğaz enfeksiyonu."
+                        }
+                      },
+                      "no": "Belirtiler uyumlu değil."
+                    }
+                  },
+                  "no": "Belirtiler uyumlu değil, detaylı inceleme önerilir."
+                }
+              }
+            }
+          }
         }
+      },
+      "no": {
+        "Yorgunluk hissediyor musunuz?": {
+          "yes": {
+            "Kas ağrılarınız var mı?": {
+              "yes": {
+                "Eklem ağrısı eşlik ediyor mu?": {
+                  "yes": "Grip olabilir.",
+                  "no": "Hafif viral enfeksiyon veya yorgunluk olabilir."
+                }
+              },
+              "no": {
+                "Uyku düzeniniz bozuk mu?": {
+                  "yes": "Stres veya uyku bozukluğu olabilir.",
+                  "no": "Genel yorgunluk."
+                }
+              }
+            }
+          },
+          "no": "Belirtileriniz uyumlu değil."
+        }
+      }
+    },
+    "Karın ağrınız var mı?": {
+      "yes": {
+        "İshal var mı?": {
+          "yes": {
+            "Dışkıda kan var mı?": {
+              "yes": "Bağırsak enfeksiyonu veya ciddi mide-bağırsak sorunu olabilir.",
+              "no": {
+                "Yakın zamanda şüpheli bir gıda tükettiniz mi?": {
+                  "yes": "Gıda zehirlenmesi olasılığı yüksek.",
+                  "no": "Viral gastroenterit olabilir."
+                }
+              }
+            }
+          },
+          "no": {
+            "Kusma var mı?": {
+              "yes": {
+                "Mide bulantısı eşlik ediyor mu?": {
+                  "yes": "Mide gribi veya sindirim sorunu olabilir.",
+                  "no": "Hafif mide rahatsızlığı."
+                }
+              },
+              "no": "Belirtiler uyumlu değil, detaylı inceleme önerilir."
+            }
+          }
+        }
+      },
+      "no": {
+        "Başka mide-bağırsak belirtileri var mı?": {
+          "yes": "Detaylı değerlendirme önerilir.",
+          "no": "Belirtiler uyumlu değil."
+        }
+      }
+    },
+    "Burun akıntınız var mı?": {
+      "yes": {
+        "Boğaz ağrınız var mı?": {
+          "yes": {
+            "Ateş eşlik ediyor mu?": {
+              "yes": "Nezle veya grip olabilir.",
+              "no": "Soğuk algınlığı olabilir."
+            }
+          },
+          "no": {
+            "Hapşırık eşlik ediyor mu?": {
+              "yes": "Alerjik rinit olabilir.",
+              "no": "Hafif viral enfeksiyon."
+            }
+          }
+        }
+      },
+      "no": {
+        "Tıkanıklık hissi var mı?": {
+          "yes": {
+            "Baş ağrısı eşlik ediyor mu?": {
+              "yes": "Sinüzit olabilir.",
+              "no": "Basit burun tıkanıklığı olabilir."
+            }
+          },
+          "no": "Belirtiler uyumlu değil."
+        }
+      }
     }
+  }
 }

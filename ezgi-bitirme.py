@@ -104,7 +104,7 @@ class LoginScene(QWidget):
 
         self.hospital_combo = QComboBox()
         self.hospital_combo.setStyleSheet("font-size: 18px; padding: 5px;")
-        self.hospital_combo.addItems(["Hastane-1", "Hastane-2", "Hastane-3"])
+        self.hospital_combo.addItems(["Aile Hekimi-1", "Aile Hekimi-2", "Aile Hekimi-3"])
 
         self.tc_input = QLineEdit()
         self.tc_input.setPlaceholderText("TC Kimlik No")
